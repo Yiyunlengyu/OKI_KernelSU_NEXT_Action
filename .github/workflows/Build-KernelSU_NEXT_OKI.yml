@@ -1,19 +1,19 @@
-name: Build KernelSU NEXT OKI
+name: Build KernelSU NEXT OKI#ChatGPT
 on:
   workflow_dispatch:
     inputs:
       CPU:
         description: "分支"
         required: true
-        default: 'sm8650'
+        default: 'sm8550'
       FEIL:
         description: "配置文件"
         required: true
-        default: 'oneplus_ace3_pro_v'
+        default: 'oneplus_ace2pro_v'
       CPUD:
         description: "处理器代号"
         required: true
-        default: 'pineapple'
+        default: 'kalama'
 
 jobs:
   build:
@@ -32,24 +32,21 @@ jobs:
        uses: actions/checkout@v3
 
      # 合并清理步骤并优化磁盘管理
-     
      - name: Cleanup
        run: |
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
         df -h
-#####
+
      # 设置Git用户信息
      - name: Configure Git
        run: |
         # 强制设置用户名和邮箱
-        
         git config --global user.name "Mifengtong"
         git config --global user.email "3335310963@qq.com"
         git config --global credential.helper store  # 保存凭证
 
      # 合并依赖安装并添加编译加速工具
-     
      - name: Install dependencies
        run: |
         sudo apt update -y
@@ -97,6 +94,9 @@ jobs:
      - name: Verify kernel build
        run: |
         cd kernel_workspace
+        # 设置 LTO=thin 环境变量
+        export LTO=thin
+        
         # 执行官方编译脚本
         ./kernel_platform/oplus/build/oplus_build_kernel.sh ${{ github.event.inputs.CPUD }} gki
         
